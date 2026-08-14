@@ -116,10 +116,10 @@ PrefabInstance:
       addedObject: {fileID: -8044309150792227383}
     - targetCorrespondingSourceObject: {fileID: 7772008768819256481, guid: 2c48aa8464e316441a77e75648f179ba, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -6139476343940161539}
+      addedObject: {fileID: -3786441319226156488}
     - targetCorrespondingSourceObject: {fileID: 7772008768819256481, guid: 2c48aa8464e316441a77e75648f179ba, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -5983061396345793278}
+      addedObject: {fileID: 2391364791147163807}
   m_SourcePrefab: {fileID: 100100000, guid: 2c48aa8464e316441a77e75648f179ba, type: 3}
 --- !u!4 &4580460041832312701 stripped
 Transform:
@@ -205,7 +205,21 @@ MonoBehaviour:
     DissipationDistance: 100
     PropagationSpeed: 343
   DefaultVelocity: {x: 0.02, y: -1, z: 0.03}
---- !u!82 &-6139476343940161539
+--- !u!114 &-3786441319226156488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8833020470840447692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2029664751b70594a860967350be8d35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shakeModifier: 10
+  boulderSmashAudioSource: {fileID: 2391364791147163807}
+--- !u!82 &2391364791147163807
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -217,7 +231,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: b025affaac4800d46a478597f6621056, type: 3}
-  m_PlayOnAwake: 0
+  m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -302,20 +316,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &-5983061396345793278
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8833020470840447692}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2029664751b70594a860967350be8d35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shakeModifier: 10
-  boulderSmashAudioSource: {fileID: -6139476343940161539}
 --- !u!1001 &5025563316269670092
 PrefabInstance:
   m_ObjectHideFlags: 0

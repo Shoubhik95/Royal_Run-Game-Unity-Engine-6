@@ -1,43 +1,62 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour       
+public class PlayerController : MonoBehaviour
 {
-    [SerializeField] float moveSpeed = 5f;
-    [SerializeField] float xClamp = 3f;
-    [SerializeField] float zClamp = 3f;
-    Vector2 movement;
-    Rigidbody rigidBody;
+    [Header("Movement Settings")]
+    [SerializeField] private float moveSpeed = 12f;
+
+    [Header("Movement Boundaries")]
+    [SerializeField] private float xClamp = 2.5f;
+
+    private Vector2 movement;
+    private Rigidbody rigidBody;
+
+    private float fixedZ;
+
     private void Awake()
     {
         rigidBody = GetComponent<Rigidbody>();
-    }
-    
-    void FixedUpdate()
-    {
-        HandleMovement();
 
+        if (rigidBody == null)
+        {
+            Debug.LogError("Rigidbody not found on Player!");
+            return;
+        }
+
+        fixedZ = rigidBody.position.z;
+
+        rigidBody.constraints = RigidbodyConstraints.FreezeRotation;
+    }
+
+    private void FixedUpdate()
+    {
+        if (rigidBody == null)
+            return;
+
+        HandleMovement();
     }
 
     public void Move(InputAction.CallbackContext context)
     {
         movement = context.ReadValue<Vector2>();
-        
     }
 
-    void HandleMovement()
+    private void HandleMovement()
     {
         Vector3 currentPosition = rigidBody.position;
-        Vector3 moveDirection = new Vector3(movement.x, 0, movement.y);
-        Vector3 newPosition = currentPosition + moveDirection * (moveSpeed *Time.fixedDeltaTime);
 
-        newPosition.x = Mathf.Clamp(newPosition.x, -xClamp, xClamp);
-        newPosition.z = Mathf.Clamp(newPosition.z, -zClamp, zClamp);
+        float newX = currentPosition.x +
+                     movement.x * moveSpeed * Time.fixedDeltaTime;
 
+        newX = Mathf.Clamp(newX, -xClamp, xClamp);
+
+        Vector3 newPosition = new Vector3(
+            newX,
+            currentPosition.y,
+            fixedZ
+        );
 
         rigidBody.MovePosition(newPosition);
-
-
-
     }
 }

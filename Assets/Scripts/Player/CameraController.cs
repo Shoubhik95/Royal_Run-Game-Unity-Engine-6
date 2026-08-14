@@ -5,42 +5,53 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [SerializeField] private ParticleSystem speedParticleSystem;
+
+    [Header("FOV Settings")]
+    [SerializeField] private float normalFOV = 60f;
+    [SerializeField] private float speedBoostFOV = 70f;
     [SerializeField] private float zoomDuration = 0.3f;
-    [SerializeField] private float minFOV = 40f;
-    [SerializeField] private float maxFOV = 80f;
-    [SerializeField] private float zoomSpeedModifier = 5f;
 
     private CinemachineCamera cinemachineCamera;
 
     private void Awake()
     {
         cinemachineCamera = GetComponent<CinemachineCamera>();
+
+        if (cinemachineCamera == null)
+        {
+            Debug.LogError("CinemachineCamera not found!");
+            return;
+        }
+
+        cinemachineCamera.Lens.FieldOfView = normalFOV;
     }
 
     public void ChangeCameraFOV(float speedAmount)
     {
         StopAllCoroutines();
-        StartCoroutine(ChangeFOVRoutine(speedAmount));
 
-        if (speedParticleSystem != null)
+        if (speedAmount > 0)
         {
-            if (speedAmount > 0)
+            StartCoroutine(ChangeFOVRoutine(speedBoostFOV));
+
+            if (speedParticleSystem != null)
                 speedParticleSystem.Play();
-            else
+        }
+        else if (speedAmount < 0)
+        {
+            StartCoroutine(ChangeFOVRoutine(normalFOV));
+
+            if (speedParticleSystem != null)
                 speedParticleSystem.Stop();
         }
     }
 
-    private IEnumerator ChangeFOVRoutine(float speedAmount)
+    private IEnumerator ChangeFOVRoutine(float targetFOV)
     {
+        if (cinemachineCamera == null)
+            yield break;
+
         float startFOV = cinemachineCamera.Lens.FieldOfView;
-
-        float targetFOV = startFOV;
-
-        if (speedAmount > 0)
-            targetFOV = Mathf.Clamp(startFOV + zoomSpeedModifier, minFOV, maxFOV);
-        else if (speedAmount < 0)
-            targetFOV = Mathf.Clamp(startFOV - zoomSpeedModifier, minFOV, maxFOV);
 
         float elapsedTime = 0f;
 
@@ -48,8 +59,11 @@ public class CameraController : MonoBehaviour
         {
             elapsedTime += Time.deltaTime;
 
-            cinemachineCamera.Lens.FieldOfView =
-                Mathf.Lerp(startFOV, targetFOV, elapsedTime / zoomDuration);
+            cinemachineCamera.Lens.FieldOfView = Mathf.Lerp(
+                startFOV,
+                targetFOV,
+                elapsedTime / zoomDuration
+            );
 
             yield return null;
         }

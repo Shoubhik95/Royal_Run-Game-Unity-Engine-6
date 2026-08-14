@@ -21,21 +21,31 @@ public class SoundObject : MonoBehaviour
 
     private void FireImpulse()
     {
-        if (Camera.main == null) return;
+        if (Camera.main == null)
+            return;
 
-        float distance = Vector3.Distance(transform.position, Camera.main.transform.position);
-        float shakeIntensity = Mathf.Min((1f / Mathf.Max(distance, 0.1f)) * shakeModifier, 1f);
+        if (cinemachineImpulseSource == null)
+            return;
 
-        // Generate camera shake
-        cinemachineImpulseSource.GenerateImpulse();
+        float distance = Vector3.Distance(
+            transform.position,
+            Camera.main.transform.position
+        );
+
+        float shakeIntensity = Mathf.Min(
+            (1f / Mathf.Max(distance, 0.1f)) * shakeModifier,
+            1f
+        );
+
+        cinemachineImpulseSource.GenerateImpulse(shakeIntensity);
     }
 
     private void PlayCollisionSound()
     {
-        if (boulderSmashAudioSource != null)
-        {
-            boulderSmashAudioSource.Stop();
-            boulderSmashAudioSource.Play();
-        }
+        if (boulderSmashAudioSource == null)
+            return;
+
+        boulderSmashAudioSource.Stop();
+        boulderSmashAudioSource.Play();
     }
 }

@@ -4,65 +4,61 @@ using UnityEngine;
 public class LevelGenerator : MonoBehaviour
 {
     [Header("References")]
-
-    [SerializeField] CameraController  cameraController;
-    // Assign the chunk prefab in the Inspector
-    [SerializeField] GameObject[] chunkPrefab;
-    [SerializeField] GameObject CheckpointChunkPrefab;
-
-    [SerializeField] Transform ChunkParent;
-    [SerializeField] ScoreManager scoreManager;
+    [SerializeField] private CameraController cameraController;
+    [SerializeField] private GameObject[] chunkPrefab;
+    [SerializeField] private GameObject CheckpointChunkPrefab;
+    [SerializeField] private Transform ChunkParent;
+    [SerializeField] private ScoreManager scoreManager;
 
     [Header("Level Settings")]
-    [Tooltip("Number of chunks to spawn at the start of the game")]
+    [SerializeField] private int StartingChunks = 12;
+    [SerializeField] private int checkpointChunkInterval = 8;
 
-    [SerializeField] int StartingChunks = 12;
-    [SerializeField] int checkpointChunkInterval = 8;
-    [Tooltip("Do Not Change Chunk Length Value Unless Chunk Prefab Size Reflects Changes ")]
-    [SerializeField] float chunkLength = 10f;
-    [SerializeField] float MoveSpeed = 5f;
-    [SerializeField] float minMoveSpeed = 2f;
-    [SerializeField] float maxMoveSpeed = 20f;
+    [Tooltip("Do Not Change Chunk Length Unless Chunk Prefab Size Reflects Changes")]
+    [SerializeField] private float chunkLength = 10f;
 
-    [SerializeField] float minGravityZ = -22f;
-    [SerializeField] float maxGravityZ = -2f;
+    [Header("Chunk Speed")]
+    [SerializeField] private float MoveSpeed = 5f;
+    [SerializeField] private float minMoveSpeed = 2f;
+    [SerializeField] private float maxMoveSpeed = 20f;
 
-    List<GameObject> chunks = new List<GameObject>();
-    int chunksSpawned = 0;
+    private List<GameObject> chunks = new List<GameObject>();
+    private int chunksSpawned = 0;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
         SpawnStartingChunks();
     }
 
-    void Update()
+    private void Update()
     {
         MoveChunks();
     }
 
+    // Called when Apple is collected or player hits obstacle
     public void ChangeChunkMoveSpeed(float speedAmount)
-    { 
+    {
         float newMoveSpeed = MoveSpeed + speedAmount;
-        newMoveSpeed = Mathf.Clamp(newMoveSpeed, minMoveSpeed, maxMoveSpeed);
 
+        newMoveSpeed = Mathf.Clamp(
+            newMoveSpeed,
+            minMoveSpeed,
+            maxMoveSpeed
+        );
 
         if (newMoveSpeed != MoveSpeed)
         {
             MoveSpeed = newMoveSpeed;
 
-            float newGravityZ = Physics.gravity.z - speedAmount;
-            newGravityZ = Mathf.Clamp(newGravityZ, minGravityZ, maxGravityZ);
-            Physics.gravity = new Vector3(Physics.gravity.x, Physics.gravity.y, newGravityZ);
-
-            cameraController.ChangeCameraFOV(speedAmount);
+            // Change camera FOV
+            if (cameraController != null)
+            {
+                cameraController.ChangeCameraFOV(speedAmount);
+            }
         }
-
-
-
     }
 
-    void SpawnStartingChunks()
+    private void SpawnStartingChunks()
     {
         for (int i = 0; i < StartingChunks; i++)
         {
@@ -72,16 +68,31 @@ public class LevelGenerator : MonoBehaviour
 
     private void SpawnChunk()
     {
-        float SpawnPositionZ = CalculateSpawnPositionZ();
+        float spawnPositionZ = CalculateSpawnPositionZ();
 
-        Vector3 chunkSpawnPosition = new Vector3(transform.position.x, transform.position.y, SpawnPositionZ);
+        Vector3 chunkSpawnPosition = new Vector3(
+            transform.position.x,
+            transform.position.y,
+            spawnPositionZ
+        );
+
         GameObject chunkToSpawn = ChooseChunkToSpawn();
 
-        GameObject newChunkGO = Instantiate(chunkToSpawn, chunkSpawnPosition, Quaternion.identity, ChunkParent);
+        GameObject newChunkGO = Instantiate(
+            chunkToSpawn,
+            chunkSpawnPosition,
+            Quaternion.identity,
+            ChunkParent
+        );
 
         chunks.Add(newChunkGO);
+
         Chunks newChunk = newChunkGO.GetComponent<Chunks>();
-        newChunk.Init(this, scoreManager);
+
+        if (newChunk != null)
+        {
+            newChunk.Init(this, scoreManager);
+        }
 
         chunksSpawned++;
     }
@@ -90,58 +101,63 @@ public class LevelGenerator : MonoBehaviour
     {
         GameObject chunkToSpawn;
 
-        if (chunksSpawned % checkpointChunkInterval == 0 && chunksSpawned != 0)
+        if (chunksSpawned % checkpointChunkInterval == 0 &&
+            chunksSpawned != 0)
         {
             chunkToSpawn = CheckpointChunkPrefab;
-
         }
         else
         {
-            chunkToSpawn = chunkPrefab[Random.Range(0, chunkPrefab.Length)];
-
+            chunkToSpawn =
+                chunkPrefab[Random.Range(0, chunkPrefab.Length)];
         }
 
         return chunkToSpawn;
     }
 
-    float CalculateSpawnPositionZ()
+    private float CalculateSpawnPositionZ()
     {
-        float SpawnPositionZ;
         if (chunks.Count == 0)
         {
-            SpawnPositionZ = transform.position.z;
+            return transform.position.z;
         }
-        else
-        {
-            //SpawnPositionZ = transform.position.z + (i * chunkLength);
-            SpawnPositionZ = chunks[chunks.Count - 1].transform.position.z + chunkLength;
-        }
-        return SpawnPositionZ;
+
+        return chunks[chunks.Count - 1].transform.position.z + chunkLength;
     }
 
-    void MoveChunks()
+    private void MoveChunks()
     {
         if (chunks.Count == 0 || Camera.main == null)
             return;
 
-        // iterate backwards so we can safely remove while iterating
+        // Iterate backwards so chunks can safely be removed
         for (int i = chunks.Count - 1; i >= 0; i--)
         {
             GameObject chunk = chunks[i];
+
             if (chunk == null)
             {
                 chunks.RemoveAt(i);
                 continue;
             }
 
-            chunk.transform.Translate(-transform.forward * MoveSpeed * Time.deltaTime);
+            // Move chunks towards the player
+            chunk.transform.Translate(
+                -transform.forward *
+                MoveSpeed *
+                Time.deltaTime
+            );
 
-            if (chunk.transform.position.z <= Camera.main.transform.position.z - chunkLength)
+            // Destroy old chunk
+            if (chunk.transform.position.z <=
+                Camera.main.transform.position.z - chunkLength)
             {
-                // destroy and remove from list
                 Destroy(chunk);
+
                 chunks.RemoveAt(i);
-                SpawnChunk(); //add a new chunk when one is destroyed
+
+                // Spawn replacement chunk
+                SpawnChunk();
             }
         }
     }

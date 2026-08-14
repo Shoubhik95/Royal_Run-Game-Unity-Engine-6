@@ -3,20 +3,22 @@ using UnityEngine;
 public class Apple : Pickup
 {
     [SerializeField] private float adjustChangeMoveSpeedAmount = 3f;
-    LevelGenerator levelGenerator;
 
+    private LevelGenerator levelGenerator;
 
     public void Init(LevelGenerator levelGenerator)
-    {       
+    {
         this.levelGenerator = levelGenerator;
     }
 
-    void Start()
-    {
-        levelGenerator = FindFirstObjectByType<LevelGenerator>();
-    }
     protected override void OnPickup()
     {
-       levelGenerator.ChangeChunkMoveSpeed(adjustChangeMoveSpeedAmount);
+        if (levelGenerator == null)
+        {
+            Debug.LogError("LevelGenerator is not assigned to Apple!");
+            return;
+        }
+
+        levelGenerator.ChangeChunkMoveSpeed(adjustChangeMoveSpeedAmount);
     }
 }
