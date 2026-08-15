@@ -1,4 +1,4 @@
-#  Royal Run: Escape the Skies
+#  King Runner: Escape the Skies
 
 ![King Runner Banner](docs/images/runner.svg)
 
