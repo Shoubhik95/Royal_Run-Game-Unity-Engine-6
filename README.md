@@ -61,7 +61,7 @@ The game utilizes an advanced procedural placement algorithm to generate an infi
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Shoubhik95/Royal_Run-Game-Unity-Engine-6.git
+   git clone https://github.com/Shoubhik95/King_Runner_Game_Unity-Engine-6.git
    ```
 2. **Open in Unity:**
    * Open **Unity Hub**.
