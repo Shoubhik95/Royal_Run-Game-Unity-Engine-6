@@ -1,4 +1,4 @@
-# 👑 Royal Run: Escape the Skies
+#  Royal Run: Escape the Skies
 
 ![King Runner Banner](docs/images/runner.svg)
 
@@ -6,17 +6,17 @@
 
 ---
 
-## 🎮 Game Preview
+##  Game Preview
 
 Here is a look at the gameplay, main menu, and game over screens:
 
-| 🖥️ Main Menu | 🏃 Gameplay | 💀 Game Over |
+|  Main Menu |  Gameplay |  Game Over |
 | :---: | :---: | :---: |
 | ![Main Menu](docs/images/mainmenu.png) | ![Gameplay](docs/images/gameplay.png) | ![Game Over](docs/images/gameover.png) |
 
 ---
 
-## 🚀 Key Features & Development Highlights
+##  Key Features & Development Highlights
 
 ### 1. Procedural Content Generation (PCG) Chunks
 The game utilizes an advanced procedural placement algorithm to generate an infinite running path. 
